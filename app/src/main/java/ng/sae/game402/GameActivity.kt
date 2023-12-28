@@ -60,22 +60,21 @@ class GameActivity : ComponentActivity() {
 @Composable
 fun MainGameScreen() {
     val toSort = """
-        30 apples, 12 bananas, 20 oranges
-        3 laptops, two phones, 1 charger
-        1 boy, 4 rats, 20 snakes
-        50 books, 1 certificate, 1 pen
-        2 hammers, 40 nails, 6 pins
-        300 mangoes, 1 plate of rice, 2 cups of water
-        1 movie, 1 song, 1 book
-        3 girls, 20 apples, 1 spaghetti
-        100 snails, 1 chicken, 2 cups of water
-        40 trousers, 2 cloth material, 1 cloth-styles book
-        Heaven, kings' palace, school
-        Sun, Trees, Air
-        Preparation, Unread Books, a gun
-        University, Secondary School, Primary School
-        a Job, 1000 dollars, a plate of rice
-        
+    30 apples, 12 bananas, 20 oranges
+    3 laptops, 2 phones, 1 charger
+    1 boy, 4 rats, 20 snakes
+    50 books, 1 certificate, 1 pen
+    2 hammers, 40 nails, 6 pins
+    300 mangoes, 1 plate of rice, 2 cups of water
+    1 movie, 1 song, 1 book
+    3 girls, 20 apples, 1 spaghetti
+    100 snails, 1 chicken, 2 cups of water
+    40 trousers, 2 cloth material, 1 cloth-styles book
+    Heaven, kings' palace, school
+    Sun, Trees, Air
+    Preparation, Unread Books, a gun
+    University, Secondary School, Primary School
+    a Job, 1000 dollars, a plate of rice
     """.trimIndent()
 
     var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
@@ -117,6 +116,10 @@ fun MainGameScreen() {
             if (stateFile.exists()) {
                 val rawStateData = stateFile.readText()
                 displayIndex = rawStateData.toInt() + 1
+                if (displayIndex >= toSortList.size) {
+                    displayIndex = 0
+
+                }
             }
             val data = remember { mutableStateOf( toSortList[displayIndex].shuffled()) }
             val state = rememberReorderableLazyListState(onMove = { from, to ->
