@@ -3,6 +3,7 @@ package ng.sae.game402
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateDpAsState
@@ -62,6 +63,33 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainGameScreen() {
+    val toSort = """
+        30 apples, 12 bananas, 20 oranges
+        3 laptops, two phones, 1 charger
+        1 boy, 4 rats, 20 snakes
+        50 books, 1 certificate, 1 pen
+        2 hammers, 40 nails, 6 pins
+        300 mangoes, 1 plate of rice, 2 cups of water
+        1 movie, 1 song, 1 book
+        3 girls, 20 apples, 1 spaghetti
+        100 snails, 1 chicken, 2 cups of water
+        40 trousers, 2 cloth material, 1 cloth-styles book
+        Heaven, kings' palace, school
+        Sun, Trees, Air
+        Preparation, Unread Books, a gun
+    """.trimIndent()
+
+    var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
+    val partsOfToSort = toSort.split("\n")
+    for (elem in partsOfToSort) {
+        val parts = elem.split(",")
+        var toInsert = ArrayList<String>()
+        for (p in parts) {
+            toInsert.add(p.trim())
+        }
+        toSortList.add(toInsert)
+    }
+
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -85,7 +113,7 @@ fun MainGameScreen() {
             Text(text = "In order my child?", fontSize = 30.sp,)
             Spacer(modifier = Modifier.height(5.dp))
 
-            val data = remember { mutableStateOf(listOf("house", "car", "goat")) }
+            val data = remember { mutableStateOf( toSortList[2].shuffled()) }
             val state = rememberReorderableLazyListState(onMove = { from, to ->
                 data.value = data.value.toMutableList().apply {
                     add(to.index, removeAt(from.index))
@@ -118,7 +146,20 @@ fun MainGameScreen() {
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(onClick = {
-                Log.v("values", data.toString())
+                Log.v("data value", data.value.toString())
+                Log.v("toSortList[2]", toSortList[2].toString())
+
+                if (toSortList[2].equals(data.value)) {
+//                    Log.v("values", "true")
+                    Toast.makeText(context,
+                        "Good my child",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context,
+                        "Speak in order my child. Touch and hold for a while then drag to reorder",
+                        Toast.LENGTH_SHORT).show()
+                }
+
             }) {
                 Text("Speak")
             }
