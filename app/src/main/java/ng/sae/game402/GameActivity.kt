@@ -73,6 +73,9 @@ fun MainGameScreen() {
         Heaven, kings' palace, school
         Sun, Trees, Air
         Preparation, Unread Books, a gun
+        University, Secondary School, Primary School
+        a Job, 1000 dollars, a plate of rice
+        
     """.trimIndent()
 
     var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
