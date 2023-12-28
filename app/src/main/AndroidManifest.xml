@@ -18,7 +18,7 @@
             android:label="@string/title_activity_game"
             android:theme="@style/Theme.Game402" />
         <activity
-            android:name=".DreamVideoActivty"
+            android:name=".DreamVideoActivity"
             android:exported="false"
             android:label="@string/title_activity_dream_video_activty"
             android:theme="@style/Theme.Game402" />

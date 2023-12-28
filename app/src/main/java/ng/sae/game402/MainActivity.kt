@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainGameScreen()
+                    GameIntroScreen()
                 }
             }
         }
@@ -63,34 +63,7 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun MainGameScreen() {
-    val toSort = """
-        30 apples, 12 bananas, 20 oranges
-        3 laptops, two phones, 1 charger
-        1 boy, 4 rats, 20 snakes
-        50 books, 1 certificate, 1 pen
-        2 hammers, 40 nails, 6 pins
-        300 mangoes, 1 plate of rice, 2 cups of water
-        1 movie, 1 song, 1 book
-        3 girls, 20 apples, 1 spaghetti
-        100 snails, 1 chicken, 2 cups of water
-        40 trousers, 2 cloth material, 1 cloth-styles book
-        Heaven, kings' palace, school
-        Sun, Trees, Air
-        Preparation, Unread Books, a gun
-    """.trimIndent()
-
-    var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
-    val partsOfToSort = toSort.split("\n")
-    for (elem in partsOfToSort) {
-        val parts = elem.split(",")
-        var toInsert = ArrayList<String>()
-        for (p in parts) {
-            toInsert.add(p.trim())
-        }
-        toSortList.add(toInsert)
-    }
-
+fun GameIntroScreen() {
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -101,75 +74,23 @@ fun MainGameScreen() {
         )
 
         Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(10.dp),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "God Asks:", fontSize = 40.sp, fontWeight = FontWeight.Bold
+                text = "Game402!", fontSize = 30.sp, fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(5.dp))
-            Text(text = "What did you See?", fontSize = 30.sp,)
-            Text(text = "In order my child?", fontSize = 30.sp,)
-            Spacer(modifier = Modifier.height(5.dp))
-
-            var displayIndex = 0
-            val stateFile = File(context.getExternalFilesDir(""), "state.txt")
-            if (stateFile.exists()) {
-                val rawStateData = stateFile.readText()
-                displayIndex = rawStateData.toInt() + 1
-            }
-            val data = remember { mutableStateOf( toSortList[displayIndex].shuffled()) }
-            val state = rememberReorderableLazyListState(onMove = { from, to ->
-                data.value = data.value.toMutableList().apply {
-                    add(to.index, removeAt(from.index))
-                }
-            })
-            LazyColumn(
-                state = state.listState,
-                modifier = Modifier
-                    .reorderable(state)
-                    .detectReorderAfterLongPress(state)
-            ) {
-                items(data.value.size, { it }) { item ->
-                    ReorderableItem(state, key = item) { isDragging ->
-                        val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
-                        Column(
-                            modifier = Modifier
-                                .shadow(elevation.value)
-//                        .background(Color.Gray)
-                        ) {
-                            Text(
-                                data.value[item], fontSize = 30.sp,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
+            Text(
+                text = "A game about speaking!",
+            )
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(onClick = {
-                Log.v("data value", data.value.toString())
-                Log.v("toSortList[2]", toSortList[displayIndex].toString())
-
-                if (toSortList[displayIndex].equals(data.value)) {
-//                    Log.v("values", "true")
-                    Toast.makeText(context,
-                        "Good my child",
-                        Toast.LENGTH_SHORT).show()
-                    stateFile.writeText((displayIndex).toString())
-                } else {
-                    Toast.makeText(context,
-                        "Speak in order my child. Touch and hold for a while then drag to reorder",
-                        Toast.LENGTH_SHORT).show()
-                }
-
+                context.startActivity(Intent(context, DreamVideoActivity::class.java))
             }) {
-                Text("Speak")
+                Text("Begin")
             }
         }
     }

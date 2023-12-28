@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.Player.REPEAT_MODE_OFF
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import ng.sae.game402.ui.theme.Game402Theme
 
-class DreamVideoActivty : ComponentActivity() {
+class DreamVideoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -64,7 +64,7 @@ fun DreamVideoScreen() {
         override fun onPlaybackStateChanged(playbackState: Int) {
             when (playbackState) {
                 Player.STATE_ENDED -> {
-//                    context.startActivity(Intent(context, GameActivity::class.java))
+                    context.startActivity(Intent(context, GameActivity::class.java))
                 }
             }
         }
