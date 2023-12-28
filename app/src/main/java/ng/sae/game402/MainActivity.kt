@@ -42,6 +42,7 @@ import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,7 +114,13 @@ fun MainGameScreen() {
             Text(text = "In order my child?", fontSize = 30.sp,)
             Spacer(modifier = Modifier.height(5.dp))
 
-            val data = remember { mutableStateOf( toSortList[2].shuffled()) }
+            var displayIndex = 0
+            val stateFile = File(context.getExternalFilesDir(""), "state.txt")
+            if (stateFile.exists()) {
+                val rawStateData = stateFile.readText()
+                displayIndex = rawStateData.toInt() + 1
+            }
+            val data = remember { mutableStateOf( toSortList[displayIndex].shuffled()) }
             val state = rememberReorderableLazyListState(onMove = { from, to ->
                 data.value = data.value.toMutableList().apply {
                     add(to.index, removeAt(from.index))
@@ -147,13 +154,14 @@ fun MainGameScreen() {
 
             Button(onClick = {
                 Log.v("data value", data.value.toString())
-                Log.v("toSortList[2]", toSortList[2].toString())
+                Log.v("toSortList[2]", toSortList[displayIndex].toString())
 
-                if (toSortList[2].equals(data.value)) {
+                if (toSortList[displayIndex].equals(data.value)) {
 //                    Log.v("values", "true")
                     Toast.makeText(context,
                         "Good my child",
                         Toast.LENGTH_SHORT).show()
+                    stateFile.writeText((displayIndex).toString())
                 } else {
                     Toast.makeText(context,
                         "Speak in order my child. Touch and hold for a while then drag to reorder",
