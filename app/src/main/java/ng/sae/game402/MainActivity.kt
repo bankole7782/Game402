@@ -1,6 +1,9 @@
 package ng.sae.game402
 
+import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -43,10 +46,37 @@ import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+
+var globalMediaPlayer: MediaPlayer? = null
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Declaring and Initializing
+        // the MediaPlayer to play g402s.mp3
+        val context = applicationContext
+        val audioUri = getUriFromAsset(context, "g402s.mp3")
+
+        if (globalMediaPlayer == null)  {
+            val mMediaPlayer = MediaPlayer.create(this, audioUri)
+            globalMediaPlayer = mMediaPlayer
+
+            globalMediaPlayer?.setOnCompletionListener(MediaPlayer.OnCompletionListener { mPlayer ->
+                mPlayer.reset()
+                if (audioUri != null) {
+                    mPlayer.setDataSource(context, audioUri)
+                }
+                mPlayer.prepare()
+                mPlayer.start()
+            })
+
+            globalMediaPlayer!!.start()
+        }
+
         setContent {
             Game402Theme {
                 // A surface container using the 'background' color from the theme
@@ -95,4 +125,29 @@ fun GameIntroScreen() {
         }
     }
 
+}
+
+
+private fun getUriFromAsset(context: Context, assetFileName: String): Uri? {
+    val assetManager = context.assets
+    var inputStream: InputStream? = null
+    var outputStream: FileOutputStream? = null
+    var tempFile: File? = null
+
+    return try {
+        inputStream = assetManager.open(assetFileName)
+        tempFile = File.createTempFile("temp_asset", null, context.cacheDir)
+        outputStream = FileOutputStream(tempFile)
+
+        inputStream.copyTo(outputStream)
+
+        Uri.fromFile(tempFile)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    } finally {
+        inputStream?.close()
+        outputStream?.close()
+        tempFile?.deleteOnExit()
+    }
 }
