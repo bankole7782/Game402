@@ -76,11 +76,16 @@ fun MainGameScreen() {
     3 girls, 20 apples, 1 spaghetti
     100 snails, 1 chicken, 2 cups of water
     40 trousers, 2 cloth material, 1 cloth-styles book
-    Heaven, kings' palace, school
+    Heaven, 1 palace, 1 school
     Sun, Trees, Air
-    Preparation, Unread Books, a gun
+    Preparation, Unread Books, 1 gun
     University, Secondary School, Primary School
-    a Job, 1000 dollars, a plate of rice
+    1 Job, 1000 dollars, 1 plate of rice
+    1 Bible, 4 witches, 20 devils
+    Jesus, Mathew, Paul, Socrates
+    6 shoes, 10 sandals, 1 shirt
+    1 English Book, 1 Maths book, 1 Physics book
+    Abraham, Joseph, Isaac
     """.trimIndent()
 
     var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
