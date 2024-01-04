@@ -5,71 +5,56 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ng.sae.game402.ui.theme.Game402Theme
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.detectReorderAfterLongPress
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 
 var globalMediaPlayer: MediaPlayer? = null
+var lastPlayedMp3: String = ""
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Declaring and Initializing
-        // the MediaPlayer to play g402s.mp3
         val context = applicationContext
-        val audioUri = getUriFromAsset(context, "g402s.mp3")
 
         if (globalMediaPlayer == null)  {
+            val audioName = getMp3ToPlay()
+            val audioUri = getUriFromAsset(context, audioName)
+
             val mMediaPlayer = MediaPlayer.create(this, audioUri)
             globalMediaPlayer = mMediaPlayer
 
             globalMediaPlayer?.setOnCompletionListener(MediaPlayer.OnCompletionListener { mPlayer ->
                 mPlayer.reset()
-                if (audioUri != null) {
-                    mPlayer.setDataSource(context, audioUri)
-                }
+
+                val audioName = getMp3ToPlay()
+                val audioUri = getUriFromAsset(context, audioName)
+                mPlayer.setDataSource(context, audioUri!!)
                 mPlayer.prepare()
                 mPlayer.start()
             })
@@ -150,4 +135,15 @@ private fun getUriFromAsset(context: Context, assetFileName: String): Uri? {
         outputStream?.close()
         tempFile?.deleteOnExit()
     }
+}
+
+fun getMp3ToPlay(): String {
+    var audioName: String
+    if (lastPlayedMp3 == "" || lastPlayedMp3 == "t2.mp3") {
+        audioName = "t1.mp3"
+    } else {
+        audioName = "t2.mp3"
+    }
+    lastPlayedMp3 = audioName
+    return audioName
 }
