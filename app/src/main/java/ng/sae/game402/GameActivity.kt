@@ -167,13 +167,13 @@ fun MainGameScreen() {
 //                    Log.v("values", "true")
                     Toast.makeText(context,
                         "Good my child",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_LONG).show()
                     context.startActivity(Intent(context, DreamVideoActivity::class.java))
                     stateFile.writeText((displayIndex).toString())
                 } else {
                     Toast.makeText(context,
                         "Speak in order my child. Touch and hold for a while then drag to reorder",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_LONG).show()
                 }
 
             }) {
