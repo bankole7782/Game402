@@ -34,7 +34,6 @@ import java.io.IOException
 import java.io.InputStream
 
 var globalMediaPlayer: MediaPlayer? = null
-var lastPlayedMp3: String = ""
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +42,7 @@ class MainActivity : ComponentActivity() {
         val context = applicationContext
 
         if (globalMediaPlayer == null)  {
-            val audioName = getMp3ToPlay()
+            val audioName = getMp3ToPlay(context)
             val audioUri = getUriFromAsset(context, audioName)
 
             val mMediaPlayer = MediaPlayer.create(this, audioUri)
@@ -52,9 +51,9 @@ class MainActivity : ComponentActivity() {
             globalMediaPlayer?.setOnCompletionListener(MediaPlayer.OnCompletionListener { mPlayer ->
                 mPlayer.reset()
 
-                val audioName = getMp3ToPlay()
-                val audioUri = getUriFromAsset(context, audioName)
-                mPlayer.setDataSource(context, audioUri!!)
+                val audioName2 = getMp3ToPlay(context)
+                val audioUri2 = getUriFromAsset(context, audioName2)
+                mPlayer.setDataSource(context, audioUri2!!)
                 mPlayer.prepare()
                 mPlayer.start()
             })
@@ -137,13 +136,18 @@ private fun getUriFromAsset(context: Context, assetFileName: String): Uri? {
     }
 }
 
-fun getMp3ToPlay(): String {
-    var audioName: String
-    if (lastPlayedMp3 == "" || lastPlayedMp3 == "t2.mp3") {
-        audioName = "t1.mp3"
-    } else {
-        audioName = "t2.mp3"
+fun getMp3ToPlay(context: Context): String {
+    var audioName: String = "t1.mp3"
+
+    val stateFile = File(context.getExternalFilesDir(""), "audio_state.txt")
+    if (stateFile.exists()) {
+        val rawStateData = stateFile.readText().trim()
+        if (rawStateData == "" || rawStateData == "t2.mp3") {
+            audioName = "t1.mp3"
+        } else {
+            audioName = "t2.mp3"
+        }
     }
-    lastPlayedMp3 = audioName
+    stateFile.writeText(audioName)
     return audioName
 }

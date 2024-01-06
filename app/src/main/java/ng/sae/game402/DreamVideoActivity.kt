@@ -70,18 +70,12 @@ fun DreamVideoScreen() {
         }
     })
 
-    DisposableEffect(
-        AndroidView(factory = {
-            StyledPlayerView(context).apply {
-                player = exoPlayer
-                useController = false
-            }
-        })
-    ) {
-        onDispose {
-            exoPlayer.release()
+    AndroidView(factory = {
+        StyledPlayerView(context).apply {
+            player = exoPlayer
+            useController = false
         }
-    }
+    })
 
 
 }
