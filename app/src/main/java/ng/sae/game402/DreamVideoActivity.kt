@@ -3,6 +3,8 @@ package ng.sae.game402
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Player.REPEAT_MODE_OFF
-import com.google.android.exoplayer2.ui.StyledPlayerView
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_OFF
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
+import androidx.media3.ui.PlayerView
 import ng.sae.game402.ui.theme.Game402Theme
 
 class DreamVideoActivity : ComponentActivity() {
@@ -38,8 +42,8 @@ class DreamVideoActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 fun DreamVideoScreen() {
 
     val context = LocalContext.current
@@ -70,10 +74,16 @@ fun DreamVideoScreen() {
         }
     })
 
+    exoPlayer.playWhenReady = true
+    exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+    exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
+
     AndroidView(factory = {
-        StyledPlayerView(context).apply {
+        PlayerView(context).apply {
             player = exoPlayer
             useController = false
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
         }
     })
 

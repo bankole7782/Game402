@@ -74,6 +74,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // added by me
-    implementation("com.google.android.exoplayer:exoplayer:2.18.7")
+//    implementation("com.google.android.exoplayer:exoplayer:2.18.7")
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+    implementation("androidx.media3:media3-common:1.2.0")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 }
