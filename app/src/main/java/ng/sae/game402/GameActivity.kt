@@ -74,11 +74,8 @@ fun MainGameScreen() {
     Preparation, Unread Books, 1 gun
     University, Secondary School, Primary School
     1 Job, 1000 dollars, 1 plate of rice
-    1 Bible, 4 witches, 20 devils
-    Jesus, Mathew, Paul, Socrates
     6 shoes, 10 sandals, 1 shirt
     1 English Book, 1 Maths book, 1 Physics book
-    Abraham, Joseph, Isaac
     """.trimIndent()
 
     var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
