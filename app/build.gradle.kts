@@ -11,8 +11,8 @@ android {
         applicationId = "ng.sae.game402"
         minSdk = 24
         targetSdk = 33
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -75,8 +75,8 @@ dependencies {
 
     // added by me
 //    implementation("com.google.android.exoplayer:exoplayer:2.18.7")
-    implementation("androidx.media3:media3-exoplayer:1.2.0")
-    implementation("androidx.media3:media3-ui:1.2.0")
-    implementation("androidx.media3:media3-common:1.2.0")
+    implementation("androidx.media3:media3-exoplayer:1.3.0")
+    implementation("androidx.media3:media3-ui:1.3.0")
+    implementation("androidx.media3:media3-common:1.3.0")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 }

@@ -72,10 +72,14 @@ fun MainGameScreen() {
     Heaven, 1 palace, 1 school
     Sun, Trees, Air
     Preparation, Unread Books, 1 gun
-    University, Secondary School, Primary School
     1 Job, 1000 dollars, 1 plate of rice
     6 shoes, 10 sandals, 1 shirt
     1 English Book, 1 Maths book, 1 Physics book
+    1 factory, 17 farms, 200 bands
+    1 trailer of cement, 1 trailer of rocks, 2 trailers of sand
+    1 bank job, 1 military job, 3 chef jobs, 1 mechanic job
+    2 songs, 10 talks, 1 blog post
+    20 bikes, 1 car, 3 men
     """.trimIndent()
 
     var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
@@ -109,7 +113,6 @@ fun MainGameScreen() {
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(text = "What did you See?", fontSize = 30.sp,)
-            Text(text = "In order my child?", fontSize = 30.sp,)
             Spacer(modifier = Modifier.height(5.dp))
 
             var displayIndex = 0
