@@ -7,37 +7,65 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import ng.sae.game402.ui.theme.Game402Theme
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.detectReorderAfterLongPress
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
+//import org.burnoutcrew.reorderable.ReorderableItem
+//import org.burnoutcrew.reorderable.detectReorderAfterLongPress
+//import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+//import org.burnoutcrew.reorderable.reorderable
 import java.io.File
+import java.util.Collections
+
+
+private val itemHeightDp = 60.dp
+private var itemHeightPx = 0
 
 class GameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +105,7 @@ fun MainGameScreen() {
     1 English Book, 1 Maths book, 1 Physics book
     1 factory, 17 farms, 200 bands
     1 trailer of cement, 1 trailer of rocks, 2 trailers of sand
-    1 bank job, 1 military job, 3 chef jobs, 1 mechanic job
+    1 bank job, 1 military job, 3 chef jobs
     2 songs, 10 talks, 1 blog post
     20 bikes, 1 car, 3 men
     """.trimIndent()
@@ -125,43 +153,19 @@ fun MainGameScreen() {
 
                 }
             }
-            val data = remember { mutableStateOf( toSortList[displayIndex].shuffled()) }
-            val state = rememberReorderableLazyListState(onMove = { from, to ->
-                data.value = data.value.toMutableList().apply {
-                    add(to.index, removeAt(from.index))
-                }
-            })
-            LazyColumn(
-                state = state.listState,
-                modifier = Modifier
-                    .reorderable(state)
-                    .detectReorderAfterLongPress(state)
-            ) {
-                items(data.value.size, { it }) { item ->
-                    ReorderableItem(state, key = item) { isDragging ->
-                        val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp)
-                        Column(
-                            modifier = Modifier
-                                .shadow(elevation.value)
-//                        .background(Color.Gray)
-                        ) {
-                            Text(
-                                data.value[item], fontSize = 30.sp,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                            )
-                        }
-                    }
-                }
-            }
+
+            myList = toSortList[displayIndex].shuffled().toMutableList()
+
+            DragToReorderList(Modifier)
 
             Spacer(modifier = Modifier.height(5.dp))
 
             Button(onClick = {
-                Log.v("data value", data.value.toString())
-                Log.v("toSortList[2]", toSortList[displayIndex].toString())
 
-                if (toSortList[displayIndex].equals(data.value)) {
+//                Log.v("data value", data.value.toString())
+//                Log.v("toSortList[2]", toSortList[displayIndex].toString())
+//
+                if (toSortList[displayIndex].equals(myList)) {
 //                    Log.v("values", "true")
                     Toast.makeText(context,
                         "Good my child",
@@ -174,10 +178,98 @@ fun MainGameScreen() {
                         Toast.LENGTH_LONG).show()
                 }
 
+                Log.v("myList", myList.toString())
+
             }) {
                 Text("Speak")
             }
         }
     }
 
+}
+
+private var myList = buildList {
+    for (i in 0..20) {
+        add("Item $i")
+    }
+}.toMutableList()
+
+@Composable
+fun DragToReorderList(modifier: Modifier) {
+    val listState = rememberLazyListState()
+    val isPlaced = remember { mutableStateOf(false) }
+    val currentIndex = remember { mutableIntStateOf(-1) }
+    val destinationIndex = remember { mutableIntStateOf(0) }
+    val slideStates = remember {
+        mutableStateMapOf<String, SlideState>()
+            .apply {
+                myList.associateWith { SlideState.NONE }.also { putAll(it) }
+            }
+    }
+
+    LaunchedEffect(isPlaced.value) {
+        if (isPlaced.value) {
+            launch {
+                if (currentIndex.intValue != destinationIndex.intValue) {
+                    Collections.swap(myList, currentIndex.intValue, destinationIndex.intValue)
+                    slideStates.apply {
+                        myList.associateWith { SlideState.NONE }.also { putAll(it) }
+                    }
+                }
+                isPlaced.value = false
+            }
+        }
+    }
+
+    with(LocalDensity.current) {
+        itemHeightPx = itemHeightDp.toPx().toInt()
+    }
+
+    LazyColumn(state = listState) {
+        items(myList.size) { idx ->
+
+            val myItem = myList.getOrNull(idx) ?: return@items
+
+            val slideState = slideStates[myItem] ?: SlideState.NONE
+
+            val verticalTranslation by animateIntAsState(
+                targetValue = when (slideState) {
+                    SlideState.UP -> -itemHeightPx
+                    SlideState.DOWN -> itemHeightPx
+                    else -> 0
+                },
+                label = "drag_to_reorder_vertical_translation"
+            )
+
+            key(myItem) {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .height(itemHeightDp)
+                        .padding(horizontal = 12.dp)
+                        .dragToReorder(
+                            item = myItem,
+                            itemList = myList,
+                            itemHeight = itemHeightPx,
+                            updateSlideState = { param: String, state: SlideState -> slideStates[param] = state },
+                            onStartDrag = { index -> currentIndex.intValue = index },
+                            onStopDrag = { currIndex: Int, destIndex: Int ->
+                                isPlaced.value = true
+                                currentIndex.intValue = currIndex
+                                destinationIndex.intValue = destIndex
+                            })
+                        .offset { IntOffset(0, verticalTranslation) }
+                ) {
+                    Text(
+                        text = myItem, fontSize=25.sp, modifier = Modifier
+                            .fillMaxWidth()
+//                            .background(Color.LightGray)
+                            .border(2.dp, Color.LightGray, RoundedCornerShape(15.dp))
+                            .padding(8.dp)
+                            .padding(start=20.dp)
+                    )
+                }
+            }
+        }
+    }
 }
