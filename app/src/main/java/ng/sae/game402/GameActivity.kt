@@ -108,6 +108,13 @@ fun MainGameScreen() {
     1 bank job, 1 military job, 3 chef jobs
     2 songs, 10 talks, 1 blog post
     20 bikes, 1 car, 3 men
+    1 bag of rice, 3 bags of maize, 3 bags of beans
+    1 trailer, 3 vehicles, 20 bikes
+    2 laptops, 40 spanners, 60 nuts
+    1 builder, 1 teacher, 3 programmers
+    browser program, music player, text editor
+    keyboard, touchscreen, mouse
+    1 cow, 1 goat, 3 snails
     """.trimIndent()
 
     var toSortList: ArrayList<List<String>> = ArrayList<List<String>>()
